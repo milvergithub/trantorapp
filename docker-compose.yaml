@@ -1,0 +1,44 @@
+version: '3.1'
+services:
+  trantorapp:
+    container_name: trantorapp
+    image: trantorapp
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+    build:
+      context: ./trantorapp
+      dockerfile: Dockerfile 
+    ports:
+      - "9091:9091"
+    depends_on:
+      - postgresdb
+    networks:
+      - trantor
+  auth-server:
+    container_name: auth-server
+    image: auth-server
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+    build:
+      context: ./auth-server
+      dockerfile: Dockerfile 
+    ports:
+      - "9092:9092"
+    depends_on:
+      - postgresdb
+    networks:
+      - trantor    
+  postgresdb:
+    container_name: postgresdb
+    image: postgres:10.3-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres 
+      POSTGRES_DB: trantorapp 
+    networks:
+      - trantor   
+networks:
+  trantor:
+    driver: bridge
